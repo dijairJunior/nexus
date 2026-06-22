@@ -65,6 +65,14 @@ public class Produto {
     private Boolean validaImei;
     private String tipoTriagem;
 
+    private String nfDevolucao;
+    private LocalDate dataNfDevolucao;
+    private String centroDistribuicao;
+
+    public String getCentroDistribuicao() {
+        return centroDistribuicao;
+    }
+
     // ── Controle ─────────────────────────────────────
     @Column(name = "criado_em", insertable= false, updatable = false)
     private LocalDateTime criadoEm;
@@ -374,5 +382,26 @@ public class Produto {
 
     public void setAtualizadoEm(LocalDateTime atualizadoEm) {
         this.atualizadoEm = atualizadoEm;
+    }
+
+
+    public void setCentroDistribuicao(String centroDistribuicao) {
+        this.centroDistribuicao = centroDistribuicao;
+    }
+
+    public LocalDate getDataNfDevolucao() {
+        return dataNfDevolucao;
+    }
+
+    public void setDataNfDevolucao(LocalDate dataNfDevolucao) {
+        this.dataNfDevolucao = dataNfDevolucao;
+    }
+
+    public String getNfDevolucao() {
+        return nfDevolucao;
+    }
+
+    public void setNfDevolucao(String nfDevolucao) {
+        this.nfDevolucao = nfDevolucao;
     }
 }
