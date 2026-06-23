@@ -9,9 +9,11 @@ import java.util.List;
 public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
+    private final DefeitoConstatadoRepository defeitoConstatadoRepository;
 
-    public ProdutoService(ProdutoRepository produtoRepository) {
+    public ProdutoService(ProdutoRepository produtoRepository, DefeitoConstatadoRepository defeitoConstatadoRepository) {
         this.produtoRepository = produtoRepository;
+        this.defeitoConstatadoRepository = defeitoConstatadoRepository;
     }
 
     public List<Produto> listarTodos() {
@@ -45,10 +47,50 @@ public class ProdutoService {
                     .getName();
             produto.setTriador(usuarioLogado);
         }
+
+        // Classificação automática sempre que salvar (criação ou atualização
+        produto.setClassificacao(calcularClassificacao(produto));
+
         return produtoRepository.save(produto);
     }
 
     public void deletar(Long id) {
         produtoRepository.deleteById(id);
+    }
+
+    public String calcularClassificacao(Produto produto) {
+
+        String statusItem = produto.getStatusItem();
+
+        if ("NOVO".equalsIgnoreCase(statusItem)) {
+            return "A";
+        }
+        if ("OBSOLETO".equalsIgnoreCase(statusItem)) {
+            return "D";
+        }
+
+        //TRIADO ou não informado -> avalia defeito e estetica
+        if (produto.getDefeitoConstatadoId() != null) {
+            DefeitoConstatado defeito = defeitoConstatadoRepository.findById(produto.getDefeitoConstatadoId())
+                    .orElse(null);
+
+            if (defeito != null && !"SEM DEFEITO".equalsIgnoreCase(defeito.getDescricao())) {
+                return "D";
+            }
+        }
+
+        String estetica = produto.getEstetica();
+
+        if ("BOM".equalsIgnoreCase(estetica)) {
+            return "A";
+        }
+        if ("RISCOS LEVES".equalsIgnoreCase(estetica)) {
+            return "B";
+        }
+        if ("RISCOS PROFUNTOS".equalsIgnoreCase(estetica)) {
+            return "C";
+        }
+
+        return "D";
     }
 }
