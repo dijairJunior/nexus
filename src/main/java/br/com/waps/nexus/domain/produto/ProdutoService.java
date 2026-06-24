@@ -3,6 +3,7 @@ package br.com.waps.nexus.domain.produto;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.util.List;
 
 @Service
@@ -65,11 +66,8 @@ public class ProdutoService {
         if ("NOVO".equalsIgnoreCase(statusItem)) {
             return "A";
         }
-        if ("OBSOLETO".equalsIgnoreCase(statusItem)) {
-            return "D";
-        }
 
-        //TRIADO ou não informado -> avalia defeito e estetica
+        //OBSOLETO, TRIADO ou não informado → avalia defeito e estetica
         if (produto.getDefeitoConstatadoId() != null) {
             DefeitoConstatado defeito = defeitoConstatadoRepository.findById(produto.getDefeitoConstatadoId())
                     .orElse(null);
@@ -77,6 +75,10 @@ public class ProdutoService {
             if (defeito != null && !"SEM DEFEITO".equalsIgnoreCase(defeito.getDescricao())) {
                 return "D";
             }
+        }
+
+        if (isResetadoNao(produto.getResetado())) {
+            return "D";
         }
 
         String estetica = produto.getEstetica();
@@ -87,10 +89,17 @@ public class ProdutoService {
         if ("RISCOS LEVES".equalsIgnoreCase(estetica)) {
             return "B";
         }
-        if ("RISCOS PROFUNTOS".equalsIgnoreCase(estetica)) {
+        if ("RISCOS PROFUNDOS".equalsIgnoreCase(estetica)) {
             return "C";
         }
 
         return "D";
+    }
+
+    private boolean isResetadoNao(String resetado) {
+        if (resetado == null) return false;
+        String semAcento = Normalizer.normalize(resetado.trim(), Normalizer.Form.NFD)
+                .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        return "NAO".equalsIgnoreCase(semAcento);
     }
 }

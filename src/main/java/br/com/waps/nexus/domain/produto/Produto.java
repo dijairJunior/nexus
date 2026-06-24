@@ -87,4 +87,7 @@ public class Produto {
     // ── Campos extras da Triagem (planilha MODELO) ──
     private String statusItem;
     private Integer defeitoConstatadoId;
+
+    // ── Resetado ─────────────────────────────────────
+    private String resetado;
 }
