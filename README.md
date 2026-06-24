@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Nexus
 
 Sistema interno de gestão e triagem de ativos retornados (reversa logística) da WAPS Solutions, desenvolvido para o time responsável pelo processamento de equipamentos de telecomunicações devolvidos por clientes via Claro.
@@ -165,3 +166,6 @@ As migrations do Flyway são aplicadas automaticamente na primeira inicializaç�
 ---
 
 Desenvolvido internamente pela equipe de TI da WAPS Solutions.
+=======
+# nexus
+>>>>>>> main
