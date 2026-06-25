@@ -1,4 +1,4 @@
-package br.com.waps.nexus.domain.lote;
+package br.com.waps.nexus.domain.lote.triagem;
 
 import jakarta.persistence.*;
 import lombok.Getter;

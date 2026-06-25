@@ -1,4 +1,4 @@
-package br.com.waps.nexus.domain.lote;
+package br.com.waps.nexus.domain.lote.recebido;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

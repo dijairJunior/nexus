@@ -2,7 +2,7 @@ package br.com.waps.nexus.domain.importacao;
 
 import br.com.waps.nexus.domain.importacao.dto.ConfirmarArmRequest;
 import br.com.waps.nexus.domain.importacao.dto.PreviewArmResponse;
-import br.com.waps.nexus.domain.lote.LoteTriagem;
+import br.com.waps.nexus.domain.lote.triagem.LoteTriagem;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
