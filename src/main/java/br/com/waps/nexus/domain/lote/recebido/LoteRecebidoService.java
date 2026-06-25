@@ -1,5 +1,6 @@
-package br.com.waps.nexus.domain.lote;
+package br.com.waps.nexus.domain.lote.recebido;
 
+import br.com.waps.nexus.domain.lote.triagem.LoteTriagemRepository;
 import br.com.waps.nexus.domain.produto.Produto;
 import br.com.waps.nexus.domain.produto.ProdutoService;
 import org.springframework.stereotype.Service;
