@@ -58,7 +58,7 @@ public class Produto {
 
     // ── Lotes (FK simples por enquanto) ─────────────
     private Integer loteTriagemId;
-    private Integer loteAprovacaoId;
+    // private Integer loteAprovacaoId;
 
     // ── Campos extras da Triagem (planilha MODELO) ──
     private String cor;
@@ -72,10 +72,6 @@ public class Produto {
     private String nfDevolucao;
     private LocalDate dataNfDevolucao;
     private String centroDistribuicao;
-
-    public String getCentroDistribuicao() {
-        return centroDistribuicao;
-    }
 
     // ── Controle ─────────────────────────────────────
     @Column(name = "criado_em", insertable = false, updatable = false)

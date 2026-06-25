@@ -1,8 +1,8 @@
 package br.com.waps.nexus.domain.contraprova;
 
-import br.com.waps.nexus.domain.lote.LoteRecebido;
-import br.com.waps.nexus.domain.lote.LoteRecebidoRepository;
-import br.com.waps.nexus.domain.lote.LoteTriagemRepository;
+import br.com.waps.nexus.domain.lote.recebido.LoteRecebido;
+import br.com.waps.nexus.domain.lote.recebido.LoteRecebidoRepository;
+import br.com.waps.nexus.domain.lote.triagem.LoteTriagemRepository;
 import br.com.waps.nexus.domain.produto.Produto;
 import br.com.waps.nexus.domain.produto.ProdutoRepository;
 import br.com.waps.nexus.dto.ContraprovaItemDTO;
