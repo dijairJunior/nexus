@@ -167,20 +167,6 @@ Valores válidos de estética (exatos, sem variação): `BOM`, `RISCOS LEVES`, `
 
 **Nota histórica:** o repositório teve `main`/`master` desalinhadas até 24/06/2026 (uma branch de feature foi criada a partir de `master` por engano). Resolvido via merge manual. `main` é a branch oficial a partir de então — sempre confirmar `git branch -a` e basear novas branches a partir de `main`.
 
-## Papéis no desenvolvimento do Nexus
-
-**Junior — Product Owner + Desenvolvedor**
-Responsável pelo produto: entende a necessidade do negócio, decide o que entra ou não no sistema, implementa e testa o código, faz os commits e aprova as mudanças. **É o único que altera a branch.** Nenhuma alteração entra no projeto sem sua validação.
-
-**ChatGPT — Tech Lead / Arquiteto**
-Responsabilidades: definir arquitetura, revisar decisões de longo prazo, revisar código (code review), garantir consistência entre módulos, definir padrões do projeto, priorizar backlog técnico, explicar conceitos e justificar decisões.
-Consultar principalmente: antes de iniciar uma feature, após concluir uma feature, em dúvidas arquiteturais, para revisão do PR antes do merge.
-
-**Claude — Pair Programmer / Especialista em Implementação**
-Responsabilidades: implementação arquivo por arquivo, debug em tempo real, investigação de erros, refatorações pontuais, ajustes de compilação, correções rápidas durante o desenvolvimento.
-Consultar principalmente: durante a implementação, durante testes, em erros de compilação/execução.
-
-**Limitação técnica importante:** não existe canal direto entre ChatGPT e Claude — cada IA só enxerga o que Junior compartilha manualmente na conversa. A documentação em `docs/` (este arquivo + `CURRENT_FEATURE.md` + `features/*.md`) é o que substitui essa comunicação direta — qualquer uma das duas IAs (ou um desenvolvedor humano novo) deve conseguir se situar lendo só esses arquivos, sem depender da memória de Junior para retransmitir contexto.
 
 **Fluxo de trabalho:**
 ```
