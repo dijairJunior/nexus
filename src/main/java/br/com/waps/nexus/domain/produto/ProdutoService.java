@@ -1,5 +1,7 @@
 package br.com.waps.nexus.domain.produto;
 
+import br.com.waps.nexus.dto.ProdutoRequestDTO;
+import br.com.waps.nexus.dto.ProdutoResponseDTO;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -12,25 +14,54 @@ public class ProdutoService {
     private final ProdutoRepository produtoRepository;
     private final DefeitoConstatadoRepository defeitoConstatadoRepository;
 
-    public ProdutoService(ProdutoRepository produtoRepository, DefeitoConstatadoRepository defeitoConstatadoRepository) {
+    public ProdutoService(ProdutoRepository produtoRepository,
+                          DefeitoConstatadoRepository defeitoConstatadoRepository) {
+
         this.produtoRepository = produtoRepository;
         this.defeitoConstatadoRepository = defeitoConstatadoRepository;
     }
 
-    public List<Produto> listarTodos() {
-        return produtoRepository.findAll();
+    // ── Métodos públicos (usados pelo Controller, falam em DTO) ──────────
+
+    public List<ProdutoResponseDTO> listarTodos() {
+        return produtoRepository.findAll()
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
     }
 
-    public Produto buscarPorId(Long id) {
+    public ProdutoResponseDTO buscarPorId(Long id) {
+        Produto produto = buscarEntidadePorId(id);
+        return toResponseDTO(produto);
+    }
+
+    public ProdutoResponseDTO criar(ProdutoRequestDTO dto) {
+        Produto produto = toEntity(dto);
+        Produto salvo = salvar(produto);
+        return toResponseDTO(salvo);
+    }
+
+    public ProdutoResponseDTO atualizar(Long id, ProdutoRequestDTO dto) {
+        Produto existente = buscarEntidadePorId(id);
+        Produto produto = toEntity(dto);
+        produto.setId(id);
+        produto.setTriador(existente.getTriador()); // preserva quem fez a triagem original
+        Produto atualizado = salvar(produto);
+        return toResponseDTO(atualizado);
+    }
+
+    public void deletar(Long id) {
+        produtoRepository.deleteById(id);
+    }
+
+    // ── Lógica de negócio (trabalha só com Entity, igual antes) ──────────
+    private Produto buscarEntidadePorId(Long id) {
         return produtoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(() ->
+                        new RuntimeException("Produto não encontrado!"));
     }
 
-    /*public Produto salvar(Produto produto) {
-        return produtoRepository.save(produto);
-    }*/
-
-    public Produto salvar(Produto produto) {
+    private Produto salvar(Produto produto) {
         if (produto.getId() == null) {
 
             if (produto.getNumeroSerie() == null || produto.getNumeroSerie().isBlank()) {
@@ -49,21 +80,17 @@ public class ProdutoService {
             produto.setTriador(usuarioLogado);
         }
 
-        // Classificação automática sempre que salvar (criação ou atualização
-        produto.setClassificacao(calcularClassificacao(produto));
+        // Classificação automática sempre que salvar (criação ou atualização)
+        produto.setClassificacao((calcularClassificacao(produto)));
 
         return produtoRepository.save(produto);
-    }
-
-    public void deletar(Long id) {
-        produtoRepository.deleteById(id);
     }
 
     public String calcularClassificacao(Produto produto) {
 
         String statusItem = produto.getStatusItem();
 
-        if ("NOVO".equalsIgnoreCase(statusItem)) {
+        if("NOVO".equalsIgnoreCase(statusItem)) {
             return "A";
         }
 
@@ -101,5 +128,121 @@ public class ProdutoService {
         String semAcento = Normalizer.normalize(resetado.trim(), Normalizer.Form.NFD)
                 .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
         return "NAO".equalsIgnoreCase(semAcento);
+    }
+
+    // ── Conversão Entity ↔ DTO ────────────────────────────────────────────
+    private Produto toEntity(ProdutoRequestDTO dto){
+        Produto produto = new Produto();
+        produto.setNumero(dto.getNumero());
+        produto.setPreenchimentoObrig(dto.getPreenchimentoObrig());
+        produto.setCodigoSap(dto.getCodigoSap());
+        produto.setDescricao(dto.getDescricao());
+        produto.setQuantidade(dto.getQuantidade());
+        produto.setModelo(dto.getModelo());
+
+        produto.setNumeroPatrimonio(dto.getNumeroPatrimonio());
+        produto.setNumeroSerie(dto.getNumeroSerie());
+        produto.setSgp(dto.getSgp());
+        produto.setNumeroImobilizado(dto.getNumeroImobilizado());
+        produto.setSubNumeroImobilizado(dto.getSubNumeroImobilizado());
+
+        produto.setCondicaoBem(dto.getCondicaoBem());
+        produto.setAlienarOuArmazenar(dto.getAlienarOuArmazenar());
+        produto.setStatusProcesso(dto.getStatusProcesso());
+        produto.setStatusVenda(dto.getStatusVenda());
+        produto.setStatus2(dto.getStatus2());
+        produto.setStatusCadastro(dto.getStatusCadastro());
+
+        produto.setCustoAquisicao(dto.getCustoAquisicao());
+        produto.setSaldoContabil(dto.getSaldoContabil());
+
+        produto.setUf(dto.getUf());
+        produto.setNfVenda(dto.getNfVenda());
+        produto.setReversaClaro(dto.getReversaClaro());
+
+        produto.setDataCompra(dto.getDataCompra());
+        produto.setDataSeparacao(dto.getDataSeparacao());
+        produto.setDataEntradaNasajon(dto.getDataEntradaNasajon());
+
+        produto.setLoteTriagemId(dto.getLoteTriagemId());
+
+        produto.setCor(dto.getCor());
+        produto.setCapacidade(dto.getCapacidade());
+        produto.setEstetica(dto.getEstetica());
+        produto.setRealizadoRecovery(dto.getRealizadoRecovery());
+        produto.setValidaImei(dto.getValidaImei());
+        produto.setTipoTriagem(dto.getTipoTriagem());
+
+        produto.setNfDevolucao(dto.getNfDevolucao());
+        produto.setDataNfDevolucao(dto.getDataNfDevolucao());
+        produto.setCentroDistribuicao(dto.getCentroDistribuicao());
+
+        produto.setStatusItem(dto.getStatusItem());
+        produto.setDefeitoConstatadoId(dto.getDefeitoConstatadoId());
+
+        produto.setResetado(dto.getResetado());
+
+        return produto;
+    }
+
+    private ProdutoResponseDTO toResponseDTO(Produto produto) {
+        ProdutoResponseDTO dto = new ProdutoResponseDTO();
+        dto.setId(produto.getId());
+
+        dto.setNumero(produto.getNumero());
+        dto.setPreenchimentoObrig(produto.getPreenchimentoObrig());
+        dto.setCodigoSap(produto.getCodigoSap());
+        dto.setDescricao(produto.getDescricao());
+        dto.setQuantidade(produto.getQuantidade());
+        dto.setModelo(produto.getModelo());
+
+        dto.setNumeroPatrimonio(produto.getNumeroPatrimonio());
+        dto.setNumeroSerie(produto.getNumeroSerie());
+        dto.setSgp(produto.getSgp());
+        dto.setNumeroImobilizado(produto.getNumeroImobilizado());
+        dto.setSubNumeroImobilizado(produto.getSubNumeroImobilizado());
+
+        dto.setCondicaoBem(produto.getCondicaoBem());
+        dto.setAlienarOuArmazenar(produto.getAlienarOuArmazenar());
+        dto.setStatusProcesso(produto.getStatusProcesso());
+        dto.setStatusVenda(produto.getStatusVenda());
+        dto.setStatus2(produto.getStatus2());
+        dto.setStatusCadastro(produto.getStatusCadastro());
+
+        dto.setCustoAquisicao(produto.getCustoAquisicao());
+        dto.setClassificacao(produto.getClassificacao());
+        dto.setSaldoContabil(produto.getSaldoContabil());
+
+        dto.setUf(produto.getUf());
+        dto.setNfVenda(produto.getNfVenda());
+        dto.setReversaClaro(produto.getReversaClaro());
+
+        dto.setDataCompra(produto.getDataCompra());
+        dto.setDataSeparacao(produto.getDataSeparacao());
+        dto.setDataEntradaNajason(produto.getDataEntradaNasajon());
+
+        dto.setLoteTriagemId(produto.getLoteTriagemId());
+
+        dto.setCor(produto.getCor());
+        dto.setCapacidade(produto.getCapacidade());
+        dto.setEstetica(produto.getEstetica());
+        dto.setRealizadoRecovery(produto.getRealizadoRecovery());
+        dto.setTriador(produto.getTriador());
+        dto.setValidaImei(produto.getValidaImei());
+        dto.setTipoTriagem(produto.getTipoTriagem());
+
+        dto.setNfDevolucao(produto.getNfDevolucao());
+        dto.setDataNfDevolucao(produto.getDataNfDevolucao());
+        dto.setCentroDistribuicao(produto.getCentroDistribuicao());
+
+        dto.setCriadoEm(produto.getCriadoEm());
+        dto.setAtualizadoEm(produto.getAtualizadoEm());
+
+        dto.setStatusItem(produto.getStatusItem());
+        dto.setDefeitoConstatadoId(produto.getDefeitoConstatadoId());
+
+        dto.setResetado(produto.getResetado());
+
+        return dto;
     }
 }

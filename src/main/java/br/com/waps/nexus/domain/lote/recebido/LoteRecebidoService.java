@@ -3,6 +3,8 @@ package br.com.waps.nexus.domain.lote.recebido;
 import br.com.waps.nexus.domain.lote.triagem.LoteTriagemRepository;
 import br.com.waps.nexus.domain.produto.Produto;
 import br.com.waps.nexus.domain.produto.ProdutoService;
+import br.com.waps.nexus.dto.LoteRecebidoRequestDTO;
+import br.com.waps.nexus.dto.LoteRecebidoResponseDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,16 +19,37 @@ public class LoteRecebidoService {
     private final LoteTriagemRepository loteTriagemRepository;
     private final ProdutoService produtoService;
 
-    public LoteRecebidoService(LoteRecebidoRepository loteRecebidoRepository,
-                               LoteTriagemRepository loteTriagemRepository,
-                               ProdutoService produtoService) {
+    public LoteRecebidoService (LoteRecebidoRepository LoteRecebidoRepository,
+                                LoteTriagemRepository LoteTriagemRepository,
+                                ProdutoService ProdutoService) {
 
-        this.loteRecebidoRepository = loteRecebidoRepository;
-        this.loteTriagemRepository = loteTriagemRepository;
-        this.produtoService = produtoService;
+        this.loteRecebidoRepository = LoteRecebidoRepository;
+        this.loteTriagemRepository = LoteTriagemRepository;
+        this.produtoService = ProdutoService;
     }
 
-    public LoteRecebido registrarConferencia(LoteRecebido loteRecebido) {
+    // ── Métodos públicos (usados pelo Controller, falam em DTO) ──────────
+
+    public LoteRecebidoResponseDTO registrarConferencia(LoteRecebidoRequestDTO dto) {
+        LoteRecebido loteRecebido = toEntity(dto);
+        LoteRecebido salvo = salvarConferencia(loteRecebido);
+        return toResponseDTO(salvo);
+    }
+
+    public List<LoteRecebidoResponseDTO> listarPorLote(Integer LoteTriagemId) {
+        return loteRecebidoRepository.findByLoteTriagemId(LoteTriagemId)
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+
+    public LoteRecebidoResponseDTO buscarPorId(Long id) {
+        LoteRecebido loteRecebido = buscarEntidadePorId(id);
+        return toResponseDTO(loteRecebido);
+    }
+
+    // ── Lógica de negócio (trabalha só com Entity, igual antes) ──────────
+    private LoteRecebido salvarConferencia(LoteRecebido loteRecebido) {
 
         validarNumeroSerie(loteRecebido.getNumeroSerie());
         validarLoteTriagemExiste(loteRecebido.getLoteTriagemId());
@@ -42,8 +65,9 @@ public class LoteRecebidoService {
         return loteRecebidoRepository.save(loteRecebido);
     }
 
-    public List<LoteRecebido> listarPorLote(Integer loteTriagemId) {
-        return loteRecebidoRepository.findByLoteTriagemId(loteTriagemId);
+    private LoteRecebido buscarEntidadePorId(Long id) {
+        return loteRecebidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lote recebido não encontrado para o ID: " + id));
     }
 
     private String calcularClassificacao(LoteRecebido loteRecebido) {
@@ -58,15 +82,15 @@ public class LoteRecebidoService {
 
     private void validarNumeroSerie(String numeroSerie) {
         if (numeroSerie == null || numeroSerie.isBlank()) {
-            throw new RuntimeException("Número de série (IMEI) é obrigatório.");
+            throw new RuntimeException("Número de Série (IMEI) é obrigatório");
         }
         if (!IMEI_PATTERN.matcher(numeroSerie).matches()) {
-            throw new RuntimeException("IMEI inválido: deve conter exatamente 15 dígitos numéricos.");
+            throw new RuntimeException("IEMI inválido: deve conter exatamente 15 dígitos numéricos.");
         }
     }
 
-    private void validarLoteTriagemExiste(Integer loteTriagemId) {
-        if (loteTriagemId == null || !loteTriagemRepository.existsById(loteTriagemId)) {
+    private void validarLoteTriagemExiste(Integer LoteTriagemId) {
+        if (LoteTriagemId == null || !loteTriagemRepository.existsById(LoteTriagemId)) {
             throw new RuntimeException("Lote de triagem não encontrado para o ID informado.");
         }
     }
@@ -77,8 +101,49 @@ public class LoteRecebidoService {
         }
     }
 
-    public LoteRecebido buscarPorId(Long id) {
-        return loteRecebidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lote recebido não encontrado para o ID: " + id));
+
+    // ── Conversão Entity ↔ DTO ────────────────────────────────────────────
+
+    private LoteRecebido toEntity(LoteRecebidoRequestDTO dto) {
+        LoteRecebido loteRecebido = new LoteRecebido();
+
+        loteRecebido.setNumeroSerie(dto.getNumeroSerie());
+        loteRecebido.setEstetica(dto.getEstetica());
+        loteRecebido.setDefeitoConstatadoId(dto.getDefeitoConstatadoId());
+        loteRecebido.setStatusItem(dto.getStatusItem());
+        loteRecebido.setResetado(dto.getResetado());
+
+        loteRecebido.setLoteTriagemId(dto.getLoteTriagemId());
+
+        loteRecebido.setTriador(dto.getTriador());
+
+        loteRecebido.setStatusConferencia(dto.getStatusConferencia());
+        loteRecebido.setObservacao(dto.getObservacao());
+
+        return loteRecebido;
     }
+
+    private LoteRecebidoResponseDTO toResponseDTO(LoteRecebido loteRecebido) {
+        LoteRecebidoResponseDTO dto = new LoteRecebidoResponseDTO();
+
+        dto.setId(loteRecebido.getId());
+
+        dto.setNumeroSerie(loteRecebido.getNumeroSerie());
+        dto.setEstetica(loteRecebido.getEstetica());
+        dto.setDefeitoConstatadoId(loteRecebido.getDefeitoConstatadoId());
+        dto.setClassificacao(loteRecebido.getClassificacao());
+        dto.setStatusItem(loteRecebido.getStatusItem());
+        dto.setResetado(loteRecebido.getResetado());
+
+        dto.setLoteTriagemId(loteRecebido.getLoteTriagemId());
+
+        dto.setTriador(loteRecebido.getTriador());
+        dto.setDataConferencia(loteRecebido.getDataConferencia());
+
+        dto.setStatusConferencia(loteRecebido.getStatusConferencia());
+        dto.setObservacao(loteRecebido.getObservacao());
+
+        return dto;
+    }
+
 }

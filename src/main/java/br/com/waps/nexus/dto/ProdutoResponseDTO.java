@@ -1,6 +1,5 @@
-package br.com.waps.nexus.domain.produto;
+package br.com.waps.nexus.dto;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,14 +7,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "tb_produto")
 @Getter
 @Setter
-public class Produto {
+public class ProdutoResponseDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // ── Identificação ──────────────────────────────
@@ -54,11 +49,10 @@ public class Produto {
     // ── Datas ───────────────────────────────────────
     private LocalDate dataCompra;
     private LocalDate dataSeparacao;
-    private LocalDate dataEntradaNasajon;
+    private LocalDate dataEntradaNajason;
 
-    // ── Lotes (FK simples por enquanto) ─────────────
+    // ── Lotes ────────────────────────────────────────
     private Integer loteTriagemId;
-    // private Integer loteAprovacaoId;
 
     // ── Campos extras da Triagem (planilha MODELO) ──
     private String cor;
@@ -74,10 +68,7 @@ public class Produto {
     private String centroDistribuicao;
 
     // ── Controle ─────────────────────────────────────
-    @Column(name = "criado_em", insertable = false, updatable = false)
     private LocalDateTime criadoEm;
-
-    @Column(name = "atualizado_em", insertable = false, updatable = false)
     private LocalDateTime atualizadoEm;
 
     // ── Campos extras da Triagem (planilha MODELO) ──

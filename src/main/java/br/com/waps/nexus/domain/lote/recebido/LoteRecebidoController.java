@@ -1,5 +1,7 @@
 package br.com.waps.nexus.domain.lote.recebido;
 
+import br.com.waps.nexus.dto.LoteRecebidoRequestDTO;
+import br.com.waps.nexus.dto.LoteRecebidoResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,20 +19,20 @@ public class LoteRecebidoController {
     }
 
     @PostMapping("/registrar-conferencia")
-    public ResponseEntity<LoteRecebido> registrarConferencia(@RequestBody LoteRecebido loteRecebido) {
-        LoteRecebido salvo = loteRecebidoService.registrarConferencia(loteRecebido);
+    public ResponseEntity<LoteRecebidoResponseDTO> registrarConferencia(@RequestBody LoteRecebidoRequestDTO dto) {
+        LoteRecebidoResponseDTO salvo = loteRecebidoService.registrarConferencia(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 
     @GetMapping("/lote/{loteTriagemId}")
-    public ResponseEntity<List<LoteRecebido>> listarPorLote(@PathVariable Integer loteTriagemId) {
-        List<LoteRecebido> lista = loteRecebidoService.listarPorLote(loteTriagemId);
+    public ResponseEntity<List<LoteRecebidoResponseDTO>> listarPorLote(@PathVariable Integer loteTriagemId) {
+        List<LoteRecebidoResponseDTO> lista = loteRecebidoService.listarPorLote(loteTriagemId);
         return ResponseEntity.ok(lista);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LoteRecebido> buscaPorId(@PathVariable Long id) {
-        LoteRecebido loteRecebido = loteRecebidoService.buscarPorId(id);
+    public ResponseEntity<LoteRecebidoResponseDTO> buscaPorId(@PathVariable Long id) {
+        LoteRecebidoResponseDTO loteRecebido = loteRecebidoService.buscarPorId(id);
         return ResponseEntity.ok(loteRecebido);
     }
 }
