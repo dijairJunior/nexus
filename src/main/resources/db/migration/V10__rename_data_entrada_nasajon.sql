@@ -1,0 +1,1 @@
+ALTER TABLE tb_produto RENAME COLUMN data_entrada_najason TO data_entrada_nasajon;

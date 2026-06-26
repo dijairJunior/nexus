@@ -37,6 +37,4 @@ public class LoteRecebido {
 
     private String statusConferencia;
     private String observacao;
-
-
 }
