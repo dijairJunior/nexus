@@ -12,15 +12,25 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /*@ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, Object>> tratarRuntimeException(RuntimeException ex) {
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<Map<String, Object>> tratarBusinessException(BusinessException ex) {
         Map<String, Object> corpo = new HashMap<>();
-        corpo.put("status", HttpStatus.CONFLICT.value());
+        corpo.put("Status", HttpStatus.CONFLICT.value());
         corpo.put("mensagem", ex.getMessage());
         corpo.put("timestamp", LocalDateTime.now());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(corpo);
-    }*/
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> tratarResourceNotFoundException(ResourceNotFoundException ex) {
+        Map<String, Object> corpo = new HashMap<>();
+        corpo.put("Status", HttpStatus.NOT_FOUND.value());
+        corpo.put("mensagem", ex.getMessage());
+        corpo.put("timestamp", LocalDateTime.now());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(corpo);
+    }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> tratarRuntimeException(RuntimeException ex) {
