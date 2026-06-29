@@ -5,6 +5,8 @@ import br.com.waps.nexus.domain.produto.Produto;
 import br.com.waps.nexus.domain.produto.ProdutoService;
 import br.com.waps.nexus.dto.LoteRecebidoRequestDTO;
 import br.com.waps.nexus.dto.LoteRecebidoResponseDTO;
+import br.com.waps.nexus.exception.BusinessException;
+import br.com.waps.nexus.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -67,7 +69,7 @@ public class LoteRecebidoService {
 
     private LoteRecebido buscarEntidadePorId(Long id) {
         return loteRecebidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lote recebido não encontrado para o ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Lote recebido não encontrado para o ID: " + id));
     }
 
     private String calcularClassificacao(LoteRecebido loteRecebido) {
@@ -82,25 +84,24 @@ public class LoteRecebidoService {
 
     private void validarNumeroSerie(String numeroSerie) {
         if (numeroSerie == null || numeroSerie.isBlank()) {
-            throw new RuntimeException("Número de Série (IMEI) é obrigatório");
+            throw new BusinessException("Número de Série (IMEI) é obrigatório");
         }
         if (!IMEI_PATTERN.matcher(numeroSerie).matches()) {
-            throw new RuntimeException("IEMI inválido: deve conter exatamente 15 dígitos numéricos.");
+            throw new BusinessException("IEMI inválido: deve conter exatamente 15 dígitos numéricos.");
         }
     }
 
     private void validarLoteTriagemExiste(Integer LoteTriagemId) {
         if (LoteTriagemId == null || !loteTriagemRepository.existsById(LoteTriagemId)) {
-            throw new RuntimeException("Lote de triagem não encontrado para o ID informado.");
+            throw new ResourceNotFoundException("Lote de triagem não encontrado para o ID informado.");
         }
     }
 
     private void validarDuplicidade(String numeroSerie, Integer loteTriagemId) {
         if (loteRecebidoRepository.existsByNumeroSerieAndLoteTriagemId(numeroSerie, loteTriagemId)) {
-            throw new RuntimeException("Essa IMEI já foi cadastrada neste lote.");
+            throw new BusinessException("Essa IMEI já foi cadastrada neste lote.");
         }
     }
-
 
     // ── Conversão Entity ↔ DTO ────────────────────────────────────────────
 

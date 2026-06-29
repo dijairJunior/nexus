@@ -1,4 +1,4 @@
-package br.com.waps.nexus.domain.produto;
+package br.com.waps.nexus.domain.defeito;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

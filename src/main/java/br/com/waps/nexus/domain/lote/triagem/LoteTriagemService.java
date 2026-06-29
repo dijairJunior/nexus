@@ -1,5 +1,6 @@
 package br.com.waps.nexus.domain.lote.triagem;
 
+import br.com.waps.nexus.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class LoteTriagemService {
 
     public LoteTriagem buscarPorId(Integer id) {
         return loteTriagemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lote não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Lote não encontrado"));
     }
 
     public LoteTriagem salvar(LoteTriagem lote) {
