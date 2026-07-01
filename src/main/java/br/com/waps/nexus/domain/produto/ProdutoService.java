@@ -249,4 +249,11 @@ public class ProdutoService {
 
         return dto;
     }
+
+    public List<ProdutoResponseDTO> listarPorLoteTriagemId(Integer loteTriagemId) {
+        return produtoRepository.findByLoteTriagemId(loteTriagemId)
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
 }

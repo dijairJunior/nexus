@@ -8,6 +8,7 @@ import br.com.waps.nexus.domain.produto.ProdutoRepository;
 import br.com.waps.nexus.dto.ContraprovaItemDTO;
 import br.com.waps.nexus.dto.ContraprovaItemDTO.StatusContraprova;
 import br.com.waps.nexus.dto.ContraprovaResumoDTO;
+import br.com.waps.nexus.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,7 +30,7 @@ public class ContraprovaService {
 
     public ContraprovaResumoDTO gerarContraprova(Integer loteTriagemId) {
         if (!loteTriagemRepository.existsById(loteTriagemId)) {
-            throw new RuntimeException("Lote de triagem não encontrado: " + loteTriagemId);
+            throw new ResourceNotFoundException("Lote de triagem não encontrado: " + loteTriagemId);
         }
 
         List<Produto> esperados = produtoRepository.findByLoteTriagemId(loteTriagemId);
