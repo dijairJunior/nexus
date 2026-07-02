@@ -1,0 +1,19 @@
+<div class="login-container">
+  <form (ngSubmit)="onSubmit()">
+    <h1>Nexus</h1>
+
+    <label for="login">Login</label>
+    <input id="login" name="login" type="text" [(ngModel)]="login" required />
+
+    <label for="senha">Senha</label>
+    <input id="senha" name="senha" type="password" [(ngModel)]="senha" required />
+
+    @if (erro()) {
+      <p class="erro">{{ erro() }}</p>
+    }
+
+    <button type="submit" [disabled]="carregando()">
+      {{ carregando() ? 'Entrando...' : 'Entrar' }}
+    </button>
+  </form>
+</div>
