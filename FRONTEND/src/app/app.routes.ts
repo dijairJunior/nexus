@@ -5,11 +5,20 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   {
     path: 'login',
-    loadComponent: () => import('./features/auth/pages/login/login').then(m => m.Login)
+    loadComponent: () => import('./features/auth/pages/login/login').then((m) => m.Login),
   },
+
   {
-    path: 'lotes',
+    path: '',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/lote/pages/lotes-list/lotes-list').then(m => m.LotesList)
-  }
+
+    loadComponent: () => import('./layout/main-layout/main-layout').then((m) => m.MainLayout),
+    children: [
+      {
+        path: 'lotes',
+        loadComponent: () =>
+          import('./features/lote/pages/lotes-list/lotes-list').then(m => m.LotesList),
+      },
+    ],
+  },
 ];

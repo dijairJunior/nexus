@@ -1,0 +1,9 @@
+<header class="header">
+  <div class="breadcrumb"><ng-content></ng-content></div>
+  <div class="user-box">
+    <span class="user-name">{{ userName() }}</span>
+    <button class="btn-logout" (click)="onLogout()" title="Sair">
+      <i class="ti ti-logout" aria-hidden="true"></i>
+    </button>
+  </div>
+</header>

@@ -23,15 +23,22 @@ export class Login {
   ) {}
 
   onSubmit(): void {
+    console.log('CLICOU');
+    console.log('carregando antes:', this.carregando());
+
+    this.carregando.set(false); // teste temporário
+
     this.erro.set(null);
     this.carregando.set(true);
 
     this.authService.login({ login: this.login, senha: this.senha }).subscribe({
       next: () => {
+        console.log('LOGIN OK');
         this.carregando.set(false);
         this.router.navigate(['/lotes']);
       },
-      error: () => {
+      error: (err) => {
+        console.error('LOGIN ERRO', err);
         this.carregando.set(false);
         this.erro.set('Login ou senha inválidos.');
       },
