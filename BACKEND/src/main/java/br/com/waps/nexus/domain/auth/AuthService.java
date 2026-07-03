@@ -21,16 +21,31 @@ public class AuthService {
     }
 
     public LoginResponse autenticar(LoginRequest request) {
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(request.getLogin(), request.getSenha());
+        System.out.println("AUTH 1 - entrou");
 
-        var  authentication = authenticationManager.authenticate(authToken);
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(request.getLogin(), request.getSenha());
+
+        System.out.println("AUTH 2 - antes authenticate");
+
+        var authentication = authenticationManager.authenticate(authToken);
+
+        System.out.println("AUTH 3 - depois authenticate");
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        System.out.println("AUTH 4 - antes buscar usuario");
 
         Usuario usuario = usuarioRepository.findByLogin(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
+        System.out.println("AUTH 5 - usuario encontrado");
+
         String token = jwtService.gerarToker(userDetails.getUsername());
+
+        System.out.println("AUTH 6 - token gerado");
+
+        System.out.println("AUTH 7 - antes return");
 
         return new LoginResponse(usuario.getLogin(), token, usuario.getNome());
     }
