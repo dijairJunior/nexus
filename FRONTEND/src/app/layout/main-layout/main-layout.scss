@@ -1,0 +1,3 @@
+.app { display: flex; height: 100vh; font-size: 13px; }
+.main { flex: 1; display: flex; flex-direction: column; background: #F1F5F9; overflow: hidden; }
+.content { flex: 1; overflow-y: auto; padding: 16px 20px; }

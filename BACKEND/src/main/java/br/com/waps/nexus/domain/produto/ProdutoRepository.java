@@ -11,4 +11,6 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     List<Produto> findByLoteTriagemId(Integer loteTriagemId);
     List<Produto> findByStatusCadastro(String statusCadastro);
     boolean existsByNumeroSerie(String numeroSerie);
+
+    long countByLoteTriagemId(Integer loteTriagemId);
 }

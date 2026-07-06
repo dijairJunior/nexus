@@ -48,4 +48,9 @@ public class JwtService {
     private boolean tokenExpirado(String token) {
         return extrairClaims(token).getExpiration().before(new Date());
     }
+
+    public String renovarToken(String tokenAtual) {
+        String login = extrairLogin(tokenAtual); // valida assinatura + extrai login
+        return gerarToker(login); // gera novo token com nova expiração
+    }
 }

@@ -1,1 +1,52 @@
-<p>lotes-list works!</p>
+<div class="lote-list-page">
+  <h1 class="page-title">Lotes de Triagem</h1>
+
+  @if (loading()) {
+    <div class="state-box">
+      <span class="spinner"></span> Carregando lotes...
+    </div>
+  } @else if (erro()) {
+    <div class="state-box erro">
+      {{ erro() }}
+      <button class="btn-sec" (click)="carregar()">Tentar Novamente</button>
+    </div>
+  } @else if (lotes().length === 0) {
+    <div class="state-box vazio">Nunhum lote encontrado.</div>
+  } @else {
+    <table class="lote-table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Data</th>
+        <th>Status</th>
+        <th>Progresso</th>
+      </tr>
+      </thead>
+      <tbody>
+      @for (lote of progresso(); track lote.id) {
+        <tr>
+          <td class="mano">{{ lote.id }}</td>
+          <td>{{ lote.dataLote ? (lote.dataLote | date:'dd/MM/yyyy') : '—' }}</td>
+          <td>
+            <span class="status-badge" [attr.data-status]="lote.status">
+              {{ lote.status }}
+            </span>
+          </td>
+          <td class="prog-cell">
+            <div class="prog-track">
+              <div class="prog-fill" [style.width.%]="lote.percentual"></div>
+            </div>
+            <span class="prog-label">{{ lote.qtdConferidos }} / {{ lote.qtdItens }}</span>
+          </td>
+        </tr>
+      }
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button class="btn-sec" (click)="paginaAnterior()" [disabled]="pagina() === 0">Anterior</button>
+      <span>Página {{ pagina() + 1 }} de {{ totalPaginas() }}</span>
+      <button class="btn-sec" (click)="proximaPagina()" [disabled]="pagina() >= totalPaginas() - 1">Próxima</button>
+    </div>
+  }
+</div>
