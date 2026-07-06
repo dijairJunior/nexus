@@ -1,0 +1,112 @@
+.lote-list-page {
+  padding: 20px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0F172A;
+  margin-bottom: 16px;
+}
+
+.state-box {
+  padding: 24px;
+  text-align: center;
+  color: #64748B;
+  font-size: 13px;
+
+  &.erro { color: #DC2626; }
+  &.vazio { color: #94A3B8; }
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #E2E8F0;
+  border-top-color: #F59E0B;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.lote-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 13px;
+
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    background: #F8FAFC;
+    color: #64748B;
+    font-weight: 500;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #E2E8F0;
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #F1F5F9;
+    color: #1E293B;
+  }
+
+  .mono { font-family: monospace; }
+}
+
+.status-badge {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: #F1F5F9;
+  color: #475569;
+
+  &[data-status="APROVADO"] { background: #D1FAE5; color: #065F46; }
+  &[data-status="REPROVADO"] { background: #FEE2E2; color: #991B1B; }
+  &[data-status="FINALIZADO"] { background: #E0E7FF; color: #3730A3; }
+  &[data-status="AGUARDANDO_APROVACAO"] { background: #FEF3C7; color: #92400E; }
+}
+
+.prog-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+}
+
+.prog-track {
+  flex: 1;
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.prog-fill {
+  height: 100%;
+  background: #F59E0B;
+}
+
+.prog-label {
+  font-size: 11px;
+  color: #64748B;
+  white-space: nowrap;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  font-size: 12.5px;
+  color: #64748B;
+}

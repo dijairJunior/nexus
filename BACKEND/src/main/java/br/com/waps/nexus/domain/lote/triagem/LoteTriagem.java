@@ -27,4 +27,8 @@ public class LoteTriagem {
     private String enderecoCliente;
     private String contatoCliente;
     private Integer quantidadeEsperada;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusLote status;
 }

@@ -14,4 +14,6 @@ public interface LoteRecebidoRepository  extends JpaRepository<LoteRecebido, Lon
     Optional<LoteRecebido> findByNumeroSerieAndLoteTriagemId(String numeroSerie, Integer loteTriagemId);
 
     List<LoteRecebido> findByLoteTriagemIdAndStatusConferencia(Integer loteTriagemId, String statusConferencia);
+
+    long countByLoteTriagemId(Integer loteTriagemId);
 }

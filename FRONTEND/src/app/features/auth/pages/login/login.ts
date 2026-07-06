@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Auth } from '../../services/auth';
+import { Auth } from '../../../../core/services/auth'; //ja alterado!
 
 @Component({
   selector: 'app-login',
@@ -26,7 +26,7 @@ export class Login {
     this.erro.set(null);
     this.carregando.set(true);
 
-    this.authService.login({ login: this.login, senha: this.senha }).subscribe({
+    this.authService.login(this.login, this.senha).subscribe({ //ja alterado
       next: () => {
         this.carregando.set(false);
         this.router.navigate(['/lotes']);
