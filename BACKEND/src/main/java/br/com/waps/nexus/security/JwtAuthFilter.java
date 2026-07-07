@@ -1,5 +1,7 @@
 package br.com.waps.nexus.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,33 +27,43 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getServletPath().startsWith("/api/auth/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
-        return;
+            return;
         }
 
         String token = authHeader.substring(7);
-        String login = jwtService.extrairLogin(token);
 
-        if (login != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        try {
+            String login = jwtService.extrairLogin(token);
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(login);
+            if (login != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(login);
 
-            if (jwtService.tokenValido(token, userDetails)) {
+                if (jwtService.tokenValido(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
 
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+        } catch (JwtException e) {
+            // token inválido/expirado: segue sem autenticar, deixa a Security Chain decidir (401/403)
+            // SecurityContextHolder.clearContext();
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);
