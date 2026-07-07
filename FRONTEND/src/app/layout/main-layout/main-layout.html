@@ -6,4 +6,13 @@
       <router-outlet></router-outlet>
     </div>
   </main>
+  
+  @if (inactivity.showWarning()) {
+    <div class="session-warning-overlay">
+      <div class="session-warning-modal">
+        <p>Sua sessão vai expirar em 30 segundos por inatividade.</p>
+        <button (click)="inactivity.continueSession()">Continuar conectado</button>
+      </div>
+    </div>
+  }
 </div>

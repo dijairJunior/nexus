@@ -1,43 +1,69 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, signal, inject, DestroyRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { Auth } from './auth';
+
+
+const TIMEOUT_MS = 10 * 60 * 1000; // 10 minutos
+const WARNING_MS = 30 * 1000; // aviso 30s antes
+
+/*
+const TIMEOUT_MS = 60 * 1000;      // 1 minuto (era 10 * 60 * 1000)
+const WARNING_MS = 15 * 1000;      // aviso 15s antes (era 30 * 1000)
+*/
 
 @Injectable({ providedIn: 'root' })
 export class InactivityService {
+  private router = inject(Router);
   private auth = inject(Auth);
-  private readonly TIMEOUT_MS = 10 * 60 * 1000; // 10 min
-  private readonly CHECK_INTERVAL_MS = 60 * 1000; // 1 min
-  private readonly REFRESH_THRESHOLD_MS = 2 * 60 * 1000; // renova se faltar < 2min
+  private destroyRef = inject(DestroyRef);
 
-  private lastActivity = Date.now();
-  private intervalId?: ReturnType<typeof setInterval>;
+  showWarning = signal(false);
+
+  private inactivityTimer?: ReturnType<typeof setTimeout>;
+  private warningTimer?: ReturnType<typeof setTimeout>;
+  private readonly events = ['mousemove', 'keydown'] as const;
+  private boundReset = () => this.resetTimers();
 
   start(): void {
-    ['mousemove', 'keydown', 'click', 'scroll'].forEach((evt) =>
-      window.addEventListener(evt, () => this.registrarAtividade()),
-    );
-    this.intervalId = setInterval(() => this.verificar(), this.CHECK_INTERVAL_MS);
+    this.events.forEach((evt) => window.addEventListener(evt, this.boundReset, { passive: true }));
+    this.resetTimers();
+
+    this.destroyRef.onDestroy(() => this.stop());
   }
 
   stop(): void {
-    if (this.intervalId) clearInterval(this.intervalId);
+    this.events.forEach((evt) => window.removeEventListener(evt, this.boundReset));
+    clearTimeout(this.inactivityTimer);
+    clearTimeout(this.warningTimer);
+    this.showWarning.set(false);
   }
 
-  private registrarAtividade(): void {
-    this.lastActivity = Date.now();
+  continueSession(): void {
+    this.showWarning.set(false);
+
+    this.auth.refresh().subscribe({
+      next: () => this.resetTimers(),
+      error: () => this.logout(),
+    });
   }
 
-  private verificar(): void {
-    if (!this.auth.isAuthenticated()) return;
+  private resetTimers(): void {
+    if (this.showWarning()) return; // não reseta silenciosamente com modal aberto
+    clearTimeout(this.inactivityTimer);
+    clearTimeout(this.warningTimer);
 
-    const parado = Date.now() - this.lastActivity;
-    if (parado >= this.TIMEOUT_MS) {
-      this.auth.logout();
-      return;
-    }
+    this.warningTimer = setTimeout(() => {
+      this.showWarning.set(true);
+    }, TIMEOUT_MS - WARNING_MS);
 
-    const expiraEm = this.auth.getTokenExpiration();
-    if (expiraEm && expiraEm - Date.now() < this.REFRESH_THRESHOLD_MS) {
-      this.auth.refresh().subscribe();
-    }
+    this.inactivityTimer = setTimeout(() => {
+      this.logout();
+    }, TIMEOUT_MS);
+  }
+
+  private logout(): void {
+    this.stop();
+    this.auth.logout();
+    this.router.navigate(['/login']);
   }
 }
