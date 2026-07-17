@@ -46,4 +46,20 @@ public class ProdutoController {
         produtoService.deletar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/lote/{loteTriagemId}")
+    public ResponseEntity<List<ProdutoResponseDTO>> listarPorLote(@PathVariable Integer loteTriagemId) {
+        return ResponseEntity.ok(produtoService.listarPorLoteTriagemId(loteTriagemId));
+    }
+
+    // [BUSCA-POR-SERIE] início — usado pra autopreencher o modelo na Conferência
+    @GetMapping("/serie/{numeroSerie}")
+    public ResponseEntity<ProdutoResponseDTO> buscarPorNumeroSerie(@PathVariable String numeroSerie) {
+        return ResponseEntity.ok(produtoService.buscarPorNumeroSerie(numeroSerie));
+    }
+    // [BUSCA-EM-LOTE] início — usado pra autopreencher modelo dos itens conferidos de uma vez
+    @PostMapping("/buscar-por-series")
+    public ResponseEntity<List<ProdutoResponseDTO>> buscarPorSeries(@RequestBody List<String> numerosSerie) {
+        return ResponseEntity.ok(produtoService.buscarPorNumerosSerie(numerosSerie));
+    }
 }

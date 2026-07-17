@@ -256,4 +256,17 @@ public class ProdutoService {
                 .map(this::toResponseDTO)
                 .toList();
     }
+
+    public ProdutoResponseDTO buscarPorNumeroSerie(String numeroSerie) {
+        Produto produto = produtoRepository.findByNumeroSerie(numeroSerie)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado para este IMEI: " + numeroSerie));
+        return toResponseDTO(produto);
+    }
+
+    public List<ProdutoResponseDTO> buscarPorNumerosSerie(List<String> numerosSerie) {
+        return produtoRepository.findByNumeroSerieIn(numerosSerie)
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
 }

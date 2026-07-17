@@ -1,6 +1,65 @@
 <div class="lote-list-page">
   <h1 class="page-title">Lotes de Triagem</h1>
 
+  <!-- [FILTRO] início — barra de filtros -->
+  <div class="filtro-bar">
+    <div class="filtro-campo">
+      <label for="filtro-status">Status</label>
+      <select
+        id="filtro-status"
+        [ngModel]="filtroStatus()"
+        (ngModelChange)="filtroStatus.set($event)"
+      >
+        <option value="">Todos</option>
+        <option value="LOTE_ARECEBER">Lote a Receber</option>
+        <option value="RECEBIDO">Recebido</option>
+        <option value="EM_TRIAGEM">Em Triagem</option>
+        <option value="EM_CONTRAPROVA">Em Contraprova</option>
+        <option value="AGUARDANDO_APROVACAO">Aguardando Aprovação</option>
+        <option value="APROVADO">Aprovado</option>
+        <option value="REPROVADO">Reprovado</option>
+        <option value="FINALIZADO">Finalizado</option>
+      </select>
+    </div>
+
+    <div class="filtro-campo">
+      <label for="filtro-protocolo">Protocolo</label>
+      <input
+        id="filtro-protocolo"
+        type="text"
+        placeholder="Ex: PROT-2026-001"
+        [ngModel]="filtroProtocolo()"
+        (ngModelChange)="filtroProtocolo.set($event)"
+      />
+    </div>
+
+    <div class="filtro-campo">
+      <label for="filtro-data-inicio">Data início</label>
+      <input
+        id="filtro-data-inicio"
+        type="date"
+        [ngModel]="filtroDataInicio()"
+        (ngModelChange)="filtroDataInicio.set($event)"
+      />
+    </div>
+
+    <div class="filtro-campo">
+      <label for="filtro-data-fim">Data fim</label>
+      <input
+        id="filtro-data-fim"
+        type="date"
+        [ngModel]="filtroDataFim()"
+        (ngModelChange)="filtroDataFim.set($event)"
+      />
+    </div>
+
+    <div class="filtro-acoes">
+      <button class="btn-pri" (click)="aplicarFiltros()">Filtrar</button>
+      <button class="btn-sec" (click)="limparFiltros()">Limpar</button>
+    </div>
+  </div>
+  <!-- [FILTRO] fim -->
+
   @if (loading()) {
     <div class="state-box">
       <span class="spinner"></span> Carregando lotes...
@@ -13,35 +72,37 @@
   } @else if (lotes().length === 0) {
     <div class="state-box vazio">Nunhum lote encontrado.</div>
   } @else {
-    <table class="lote-table">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Data</th>
-        <th>Status</th>
-        <th>Progresso</th>
-      </tr>
-      </thead>
-      <tbody>
-      @for (lote of progresso(); track lote.id) {
+    <div class="table-scroll">
+      <table class="lote-table">
+        <thead>
         <tr>
-          <td class="mano">{{ lote.id }}</td>
-          <td>{{ lote.dataLote ? (lote.dataLote | date:'dd/MM/yyyy') : '—' }}</td>
-          <td>
-            <span class="status-badge" [attr.data-status]="lote.status">
-              {{ lote.status }}
-            </span>
-          </td>
-          <td class="prog-cell">
-            <div class="prog-track">
-              <div class="prog-fill" [style.width.%]="lote.percentual"></div>
-            </div>
-            <span class="prog-label">{{ lote.qtdConferidos }} / {{ lote.qtdItens }}</span>
-          </td>
+          <th>ID</th>
+          <th>Data</th>
+          <th>Status</th>
+          <th>Progresso</th>
         </tr>
-      }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (lote of progresso(); track lote.id) {
+            <tr (click)="abrirDetalhe(lote.id)" class="linha-clicavel">
+              <td class="mano">{{ lote.id }}</td>
+              <td>{{ lote.dataLote ? (lote.dataLote | date:'dd/MM/yyyy') : '—' }}</td>
+              <td>
+              <span class="status-badge" [attr.data-status]="lote.status">
+                {{ lote.status }}
+              </span>
+              </td>
+              <td class="prog-cell">
+                <div class="prog-track">
+                  <div class="prog-fill" [style.width.%]="lote.percentual"></div>
+                </div>
+                <span class="prog-label">{{ lote.qtdConferidos }} / {{ lote.qtdItens }}</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
 
     <div class="pagination">
       <button class="btn-sec" (click)="paginaAnterior()" [disabled]="pagina() === 0">Anterior</button>

@@ -10,6 +10,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     Optional<Produto> findByNumeroSerie(String numeroSerie);
     List<Produto> findByLoteTriagemId(Integer loteTriagemId);
     List<Produto> findByStatusCadastro(String statusCadastro);
+    List<Produto> findByNumeroSerieIn(List<String> numerosSerie);
     boolean existsByNumeroSerie(String numeroSerie);
 
     long countByLoteTriagemId(Integer loteTriagemId);

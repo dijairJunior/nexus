@@ -1,0 +1,33 @@
+<div class="lote-detalhe-page">
+  @if (loading()) {
+    <div class="state-box">
+      <span class="spinner"></span> Carregando lote...
+    </div>
+  } @else if (erro()) {
+    <div class="state-box erro">
+      {{ erro() }}
+      <button class="btn-sec" (click)="voltar()">Voltar para lista</button>
+      <img src="assets/icons/voltar.png" alt="Voltar" width="16" height="16" />
+    </div>
+  } @else if (lote()) {
+    <div class="lote-header">
+      <button class="btn-voltar" (click)="voltar()">← Voltar</button>
+      <div>
+        <p class="lote-protocolo">{{ lote()!.protocolo }}</p>
+        <h1 class="lote-titulo">Lote #{{ lote()!.id }} — {{ lote()!.razaoSocialCliente }}</h1>
+      </div>
+    </div>
+
+    <nav class="tabs-nav">
+      @for (aba of abas; track aba.path) {
+        <a [routerLink]="[aba.path]" routerLinkActive="tab-ativa" class="tab-item">
+          {{ aba.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="tab-content">
+      <router-outlet></router-outlet>
+    </div>
+  }
+</div>

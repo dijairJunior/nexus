@@ -1,0 +1,40 @@
+// [INFORMACOES] início
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.info-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px 20px;
+
+  h3 {
+    margin: 0 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 12px;
+    margin: 0;
+  }
+
+  dt {
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 13px;
+    color: #111827;
+    font-weight: 500;
+  }
+}
+// [INFORMACOES] fim
