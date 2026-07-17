@@ -1,0 +1,48 @@
+<!-- [PRODUTOS] início -->
+<div class="produtos-tab">
+  @if (loading()) {
+    <div class="state-box">
+     <span class="spinner"> Carregando produtos...</span>
+    </div>
+  } @else if (erro()){
+    <div class="state-box erro">{{ erro }}</div>
+  } @else if (produtos().length === 0) {
+    <div class="state-box vazio">Nunhum produto encontrado nesse lote.</div>
+  } @else {
+    <div class="produto-table-wrap">
+      <table class="produto-table">
+        <thead>
+          <tr>
+            <th>Nº</th>
+            <th>Código Sap</th>
+            <th>Descrição</th>
+            <th>Quantidade</th>
+            <th>Nº Patrimonio</th>
+            <th>Codições</th>
+            <th>Ação</th>
+            <th>Classificação</th>
+            <th>Status Cadastro</th>
+            <th>Satus da venda</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of produtos(); track p.id) {
+            <tr>
+              <td>{{ p.numero }}</td>
+              <td>{{ p.codigoSap }}</td>
+              <td>{{ p.descricao }}</td>
+              <td>{{ p.quantidade }}</td>
+              <td>{{ p.numeroPatrimonio }}</td>
+              <td>{{ p.condicaoBem }}</td>
+              <td>{{ p.alienarOuArmazenar }}</td>
+              <td>{{ p.classificacao }}</td>
+              <td>{{ p.statusCadastro }}</td>
+              <td>{{ p.statusVenda }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+<!-- [PRODUTOS] fim -->

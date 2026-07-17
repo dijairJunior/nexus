@@ -6,21 +6,21 @@ import br.com.waps.nexus.domain.importacao.dto.ItemPreviewDTO;
 import br.com.waps.nexus.domain.importacao.dto.PreviewArmResponse;
 import br.com.waps.nexus.domain.lote.triagem.LoteTriagem;
 import br.com.waps.nexus.domain.lote.triagem.LoteTriagemRepository;
+import br.com.waps.nexus.domain.lote.triagem.StatusLote;
 import br.com.waps.nexus.domain.produto.Produto;
 import br.com.waps.nexus.domain.produto.ProdutoRepository;
+import br.com.waps.nexus.exception.BusinessException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ImportacaoService {
@@ -37,7 +37,7 @@ public class ImportacaoService {
     public PreviewArmResponse gerarPreview(MultipartFile arquivo, String protocolo) throws IOException {
 
         try (InputStream is = arquivo.getInputStream();
-             Workbook workbook = new XSSFWorkbook(is)) {
+             Workbook workbook = WorkbookFactory.create(is)) {
 
             Sheet abaArm = workbook.getSheet("ARM");
             Sheet abaRomaneio = workbook.getSheet("ROMANEIO");
@@ -67,18 +67,42 @@ public class ImportacaoService {
     private List<ItemPreviewDTO> lerItensRomaneio(Sheet aba) {
         List<ItemPreviewDTO> itens = new ArrayList<>();
 
-        for (int i =1; i <= aba.getLastRowNum(); i++) {
+        Row cabecalho = aba.getRow(0);
+        Map<String, Integer> colunas = mapearColunas(cabecalho);
+
+        Integer colImei = obterPrimeiraExistente(colunas,
+                "IMEI", "NUMERO DE SERIE", "NÚMERO DE SÉRIE");
+
+        Integer colModelo = obterPrimeiraExistente(colunas,
+                "MARCA/MODELO", "MARCA / MODELO", "MATERIAL", "MODELO");
+
+        Integer colNf = obterPrimeiraExistente(colunas,
+                "NF", "NOTA FISCAL", "NF DEVOLUCAO", "NF DEVOLUÇÃO");
+
+        Integer colDataNf = obterPrimeiraExistente(colunas,
+                "EMISSAO NF", "EMISSÃO NF", "DATA NF", "DATA DA NF");
+
+        Integer colCd = obterPrimeiraExistente(colunas,
+                "CD", "CENTRO DE DISTRIBUICAO", "CENTRO DE DISTRIBUIÇÃO");
+
+        validarColunasObrigatorias(colImei, colModelo, colNf);
+
+        if (colImei == null) {
+            throw new RuntimeException("Coluna IMEI não encontrada na aba Romaneio");
+        }
+
+        for (int i = 1; i <= aba.getLastRowNum(); i++) {
             Row row = aba.getRow(i);
             if (row == null || isLinhaVazia(row)) continue;
 
             ItemPreviewDTO item = new ItemPreviewDTO();
             item.setLinha(i + 1);
-            item.setModelo(lerTexto(row.getCell(3)));
-            item.setNfDevolucao(lerTexto(row.getCell(4)));
-            item.setDataNfDevolucao(lerData(row.getCell(5)));
-            item.setCentroDistribuicao(lerTexto(row.getCell(6)));
+            item.setModelo(colModelo != null ? lerTexto(row.getCell(colModelo)) : null);
+            item.setNfDevolucao(colNf != null ? lerTexto(row.getCell(colNf)) : null);
+            item.setDataNfDevolucao(colDataNf != null ? lerData(row.getCell(colDataNf)) : null);
+            item.setCentroDistribuicao(colCd != null ? lerTexto(row.getCell(colCd)) : null);
 
-            String imei = lerTexto(row.getCell(2));
+            String imei = lerTexto(row.getCell(colImei));
             item.setNumeroSerie(imei);
             item.setErro(validarImei(imei));
 
@@ -140,6 +164,8 @@ public class ImportacaoService {
         lote.setContatoCliente(request.getContatoCliente());
         lote.setQuantidadeEsperada(request.getItens().size());
         lote.setNumero(proximoNumeroSequencial());
+        lote.setDataLote(LocalDate.now());
+        lote.setStatus(StatusLote.RECEBIDO);
 
         LoteTriagem loteSalvo = loteTriagemRepository.save(lote);
 
@@ -167,6 +193,50 @@ public class ImportacaoService {
                 .filter(n -> n != null)
                 .max(Comparator.naturalOrder())
                 .orElse(0) + 1;
+    }
+
+    private Map<String, Integer> mapearColunas(Row cabecalho) {
+        Map<String, Integer> mapa = new HashMap<>();
+        if (cabecalho == null) return mapa;
+
+        for (int c = 0; c < cabecalho.getLastCellNum(); c++) {
+            String nome = normalizarCabecalho(lerTexto(cabecalho.getCell(c)));
+            if (nome != null && !nome.isBlank()) {
+                mapa.put(nome, c);
+            }
+        }
+        return mapa;
+    }
+
+    private Integer obterPrimeiraExistente(Map<String, Integer> colunas, String... nomes) {
+        for (String nome : nomes) {
+            Integer idx = colunas.get(normalizarCabecalho(nome));
+            if (idx != null) return idx;
+        }
+        return null;
+    }
+
+    private String normalizarCabecalho(String valor) {
+        if (valor == null) return null;
+        return Normalizer.normalize(valor, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .replaceAll("\\s+", " ")
+                .trim()
+                .toUpperCase(Locale.ROOT);
+    }
+
+    private void validarColunasObrigatorias(Integer colImei, Integer colModelo, Integer colNf) {
+        List<String> ausentes = new ArrayList<>();
+
+        if (colImei == null) ausentes.add("IMEI");
+        if (colModelo == null) ausentes.add("MATERIAL ou MARCA/MODELO");
+        if (colNf == null) ausentes.add("NF");
+
+        if (!ausentes.isEmpty()) {
+            throw new BusinessException(
+                    "Colunas obrigatórias não encontradas na aba Romaneio: " + String.join(", ", ausentes)
+            );
+        }
     }
 
 }

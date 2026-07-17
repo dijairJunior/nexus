@@ -1,0 +1,137 @@
+<!-- [CONFERENCIA] início -->
+<div class="conferencia-tab">
+  <div class="tab-header">
+    <h3>Itens Conferidos</h3>
+    <button class="btn-pri" (click)="abrirFormulario()">+ Nova Conferência</button>
+  </div>
+
+  @if (loading()) {
+    <div class="state-box"><span class="spinner"></span>Carregando...</div>
+  } @else if (erro()) {
+    <div class="state-box erro">{{ erro() }}</div>
+  } @else if (itens().length === 0) {
+    <div class="state-box vazio">Nenhum item conferido ainda neste lote.</div>
+  } @else {
+    <div class="produto-table-wrap">
+      <table class="produto-table">
+        <thead>
+        <tr>
+          <th>IMEI</th>
+          <th>Dispositivo</th>
+          <th>Estética</th>
+          <th>Status Item</th>
+          <th>Resetado</th>
+          <th>Classificação</th>
+          <th>Triador</th>
+          <th>Status Conferência</th>
+          <th>Data</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (item of itens(); track item.id) {
+            <tr>
+              <td class="mono">{{ item.numeroSerie }}</td>
+              <td>{{ modeloDoItem(item.numeroSerie) }}</td>
+              <td>{{ item.estetica }}</td>
+              <td>{{ item.statusItem }}</td>
+              <td>{{ item.resetado }}</td>
+              <td>{{ item.classificacao }}</td>
+              <td>{{ item.triador }}</td>
+              <td>{{ item.statusConferencia }}</td>
+              <td>{{ item.dataConferencia | date: 'dd/MM/yyyy HH:mm' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (buscandoModelo()) {
+    <span class="dispositivo-info">Buscando...</span>
+  } @else if (modeloEncontrado()) {
+    <span class="dispositivo-info">{{ modeloEncontrado() }}</span>
+  }
+
+  @if (mostrarFormulario()) {
+    <div class="overlay" (click)="fecharFormulario()"></div>
+    <div class="painel-form">
+      <div class="painel-header">
+        <h3>Nova Conferência</h3>
+        <button class="btn-fechar" (click)="fecharFormulario()">&times;</button>
+      </div>
+
+      <div class="painel-body">
+        @if (erroFormulario()) {
+          <div class="state-box erro">{{ erroFormulario() }}</div>
+        }
+
+        <label>IMEI (15 dígitos)</label>
+        <input
+          type="text"
+          [ngModel]="form.numeroSerie"
+          (ngModelChange)="onImeiChange($event)"
+          maxlength="15"
+          placeholder="357799158838892"
+        />
+
+        <label>Status do Item</label>
+        <select [ngModel]="form.statusItem" (ngModelChange)="form.statusItem = $event">
+          <option value="">Selecione</option>
+          @for (op of opcoesStatusItem; track op) {
+            <option [value]="op">{{ op }}</option>
+          }
+        </select>
+
+        @if (form.statusItem !== 'NOVO') {
+          <label>Estética</label>
+          <select [ngModel]="form.estetica" (ngModelChange)="form.estetica = $event">
+            <option value="">Selecione</option>
+            @for (op of opcoesEstetica; track op) {
+              <option [value]="op">{{ op }}</option>
+            }
+          </select>
+
+          <label>Defeito Constatado</label>
+          <select [ngModel]="form.defeitoConstatadoId" (ngModelChange)="form.defeitoConstatadoId = $event">
+            <option [value]="null">Selecione</option>
+            @for (d of defeitos(); track d.id) {
+              <option [value]="d.id">{{ d.descricao }}</option>
+            }
+          </select>
+
+          <label>Resetado</label>
+          <select [ngModel]="form.resetado" (ngModelChange)="form.resetado = $event">
+            <option value="">Selecione</option>
+            @for (op of opcoesResetado; track op) {
+              <option [value]="op">{{ op }}</option>
+            }
+          </select>
+        }
+
+        <label>Triador</label>
+        <input
+          type="text"
+          [ngModel]="form.triador"
+          (ngModelChange)="form.triador = $event"
+          placeholder="Nome do triador"
+        />
+
+        <label>Observação</label>
+        <textarea
+          [ngModel]="form.observacao"
+          (ngModelChange)="form.observacao = $event"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <div class="painel-footer">
+        <button class="btn-sec" (click)="fecharFormulario()">Cancelar</button>
+        <button class="btn-pri" [disabled]="salvando()" (click)="salvar()">
+          {{ salvando() ? 'Salvando...' : 'Salvar' }}
+        </button>
+      </div>
+    </div>
+  }
+
+</div>
+<!-- [CONFERENCIA] fim -->

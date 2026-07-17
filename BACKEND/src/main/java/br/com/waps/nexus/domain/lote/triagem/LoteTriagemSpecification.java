@@ -12,6 +12,22 @@ public class LoteTriagemSpecification {
                 predicates = cb.and(predicates, cb.equal(root.get("status"), filtro.status()));
             }
 
+            if (filtro.protocolo() != null && !filtro.protocolo().isBlank()) {
+                predicates = cb.and(predicates,cb.like(
+                        cb.lower(root.get("protocolo")), "%" + filtro.protocolo()
+                                .trim().toLowerCase() + "%"));
+            }
+
+            if (filtro.dataInicio() != null) {
+                predicates = cb.and(predicates,
+                        cb.greaterThanOrEqualTo(root.get("dataLote"), filtro.dataInicio()));
+            }
+
+            if (filtro.dataFim() != null) {
+                predicates = cb.and(predicates,
+                        cb.lessThanOrEqualTo(root.get("dataLote"), filtro.dataFim()));
+            }
+
             if (filtro.search() != null && !filtro.search().isBlank()) {
                 String termo = "%" + filtro.search().trim() + "%";
                 var porId = tryParseId(filtro.search(), cb, root);

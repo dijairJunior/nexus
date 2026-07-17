@@ -1,0 +1,30 @@
+<!-- [INFORMACOES] início -->
+
+@if (lote(); as l) {
+  <div class="info-grid">
+    <section class="info-card">
+      <h3>Dados do Lote</h3>
+      <dl>
+        <dt>Número</dt><dd>{{ l.numero }}</dd>
+        <dt>Descrição</dt><dd>{{ l.descricao }}</dd>
+        <dt>Data do lote</dt><dd>{{ l.dataLote | date: 'dd/MM/yyyy' }}</dd>
+        <dt>Protocolo</dt><dd>{{ l.protocolo }}</dd>
+        <dt>Quatidade Esperada</dt><dd>{{ l.quantidadeEsperada }}</dd>
+      </dl>
+    </section>
+
+    <section class="info-card">
+      <h3>Dados do Cliente</h3>
+      <dl>
+        <dt>Razão Social</dt><dd>{{ l.razaoSocialCliente }}</dd>
+        <dt>CNPJ</dt><dd>{{ l.cnpjCliente }}</dd>
+        <dt>Endereço</dt><dd>{{ l.enderecoCliente }}</dd>
+        <dt>Contato</dt><dd>{{ l.contatoCliente }}</dd>
+      </dl>
+    </section>
+  </div>
+} @else {
+  <p>Carregando informações do lote...</p>
+}
+
+<!-- [INFORMACOES] fim -->

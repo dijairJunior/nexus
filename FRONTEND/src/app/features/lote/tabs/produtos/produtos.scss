@@ -1,0 +1,73 @@
+// [PRODUTOS] início
+.produtos-tab {
+  padding: 4px 0;
+}
+
+.state-box {
+  padding: 24px;
+  text-align: center;
+  color: #64748B;
+  font-size: 13px;
+
+  &.erro { color: #DC2626; }
+  &.vazio { color: #94A3B8; }
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #E2E8F0;
+  border-top-color: #F59E0B;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.produto-table-wrap {
+  overflow-x: auto;
+}
+
+.produto-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 13px;
+
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    background: #F8FAFC;
+    color: #64748B;
+    font-weight: 500;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #E2E8F0;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #F1F5F9;
+    color: #1E293B;
+    white-space: nowrap;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: #F8FAFC;
+  }
+
+  .mono { font-family: monospace; }
+}
+// [PRODUTOS] fim

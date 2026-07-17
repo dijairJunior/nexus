@@ -21,7 +21,7 @@ export interface LoteResumo {
 }
 
 export type StatusLote =
-  | 'LOTE_A_RECEBER'
+  | 'LOTE_ARECEBER'
   | 'RECEBIDO'
   | 'EM_TRIAGEM'
   | 'EM_CONTRAPROVA'
