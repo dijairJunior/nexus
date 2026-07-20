@@ -2,11 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PaginaLotes, Lote } from '../../../shared/models/lote';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class LoteService {
   private http = inject(HttpClient);
-  private baseUrl = 'http://localhost:3480/api/lotes-triagem'; // corrigido agora !
+  private baseUrl = `${environment.apiUrl}/lotes-triagem`; // corrigido agora !
 
   listarPaginado(
     page: number,
