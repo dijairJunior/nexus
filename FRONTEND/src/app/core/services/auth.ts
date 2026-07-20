@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 interface LoginRequest {
   login: string;
@@ -16,7 +17,7 @@ interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class Auth {
-  private readonly apiUrl = 'http://localhost:3480/api/auth';
+  private readonly apiUrl = `${environment.apiUrl}/auth`;
   private readonly tokenKey = 'nexus_token';
 
   isAuthenticated = signal<boolean>(this.hasToken());
