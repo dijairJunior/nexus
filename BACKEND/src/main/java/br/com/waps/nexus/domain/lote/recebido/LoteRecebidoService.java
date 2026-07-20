@@ -56,6 +56,7 @@ public class LoteRecebidoService {
         validarNumeroSerie(loteRecebido.getNumeroSerie());
         validarLoteTriagemExiste(loteRecebido.getLoteTriagemId());
         validarDuplicidade(loteRecebido.getNumeroSerie(), loteRecebido.getLoteTriagemId());
+        validarCapacidadeArmazenamento(loteRecebido);
 
         String classificacao = calcularClassificacao(loteRecebido);
         loteRecebido.setClassificacao(classificacao);
@@ -78,6 +79,7 @@ public class LoteRecebidoService {
         produtoTemp.setDefeitoConstatadoId(loteRecebido.getDefeitoConstatadoId());
         produtoTemp.setResetado(loteRecebido.getResetado());
         produtoTemp.setEstetica(loteRecebido.getEstetica());
+        produtoTemp.setPossuiMarcasUso(loteRecebido.getPossuiMarcasUso());
 
         return produtoService.calcularClassificacao(produtoTemp);
     }
@@ -103,6 +105,23 @@ public class LoteRecebidoService {
         }
     }
 
+    private void validarCapacidadeArmazenamento(LoteRecebido loteRecebido) {
+        Integer capacidade = loteRecebido.getCapacidadeArmazenamento();
+
+        if (capacidade == null) {
+            throw new BusinessException("Capacidade de armazenamento é obrigatória.");
+        }
+
+        List<Integer> valoresValidos = List.of(64, 128, 256, 512, 1024);
+        if (!valoresValidos.contains(capacidade)) {
+            throw new BusinessException("Capacidade de armazenamento inválida. Valores aceitos: 64, 128, 256, 512, 1024.");
+        }
+
+        if ("NOVO".equalsIgnoreCase(loteRecebido.getStatusItem()) && loteRecebido.getPossuiMarcasUso() == null) {
+            throw new BusinessException("É obrigatório informar se o item possui marcas de uso.");
+        }
+    }
+
     // ── Conversão Entity ↔ DTO ────────────────────────────────────────────
 
     private LoteRecebido toEntity(LoteRecebidoRequestDTO dto) {
@@ -113,11 +132,11 @@ public class LoteRecebidoService {
         loteRecebido.setDefeitoConstatadoId(dto.getDefeitoConstatadoId());
         loteRecebido.setStatusItem(dto.getStatusItem());
         loteRecebido.setResetado(dto.getResetado());
+        loteRecebido.setCapacidadeArmazenamento(dto.getCapacidadeArmazenamento());
+        loteRecebido.setPossuiMarcasUso(dto.getPossuiMarcasUso());
 
         loteRecebido.setLoteTriagemId(dto.getLoteTriagemId());
-
         loteRecebido.setTriador(dto.getTriador());
-
         loteRecebido.setStatusConferencia(dto.getStatusConferencia());
         loteRecebido.setObservacao(dto.getObservacao());
 
@@ -128,19 +147,18 @@ public class LoteRecebidoService {
         LoteRecebidoResponseDTO dto = new LoteRecebidoResponseDTO();
 
         dto.setId(loteRecebido.getId());
-
         dto.setNumeroSerie(loteRecebido.getNumeroSerie());
         dto.setEstetica(loteRecebido.getEstetica());
         dto.setDefeitoConstatadoId(loteRecebido.getDefeitoConstatadoId());
         dto.setClassificacao(loteRecebido.getClassificacao());
         dto.setStatusItem(loteRecebido.getStatusItem());
         dto.setResetado(loteRecebido.getResetado());
+        dto.setCapacidadeArmazenamento(loteRecebido.getCapacidadeArmazenamento());
+        dto.setPossuiMarcasUso(loteRecebido.getPossuiMarcasUso());
 
         dto.setLoteTriagemId(loteRecebido.getLoteTriagemId());
-
         dto.setTriador(loteRecebido.getTriador());
         dto.setDataConferencia(loteRecebido.getDataConferencia());
-
         dto.setStatusConferencia(loteRecebido.getStatusConferencia());
         dto.setObservacao(loteRecebido.getObservacao());
 

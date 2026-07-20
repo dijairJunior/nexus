@@ -77,4 +77,8 @@ public class ProdutoResponseDTO {
 
     // ── Resetado ─────────────────────────────────────
     private String resetado;
+
+    // ── Armazenamento ────────────────────────────────
+    private Integer capacidadeArmazenamento;
+    private Boolean possuiMarcasUso;
 }
