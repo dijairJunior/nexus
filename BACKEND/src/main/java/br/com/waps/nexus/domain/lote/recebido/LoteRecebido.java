@@ -37,4 +37,8 @@ public class LoteRecebido {
 
     private String statusConferencia;
     private String observacao;
+
+    // ── Armazenamento ────────────────────────────────
+    private Integer capacidadeArmazenamento;
+    private Boolean possuiMarcasUso;
 }

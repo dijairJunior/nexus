@@ -72,4 +72,8 @@ public class ProdutoRequestDTO {
 
     // ── Resetado ─────────────────────────────────────
     private String resetado;
+
+    // ── Armazenamento ────────────────────────────────
+    private Integer capacidadeArmazenamento;
+    private Boolean possuiMarcasUso;
 }

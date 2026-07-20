@@ -17,8 +17,13 @@ public class LoteRecebidoRequestDTO {
     private Integer loteTriagemId;
 
     private String triador;
+
     // dataConferencia NÂO entra: gerada via @CreationTimestamp.
 
     private String statusConferencia;
     private String observacao;
+
+    // ── Armazenamento ────────────────────────────────
+    private Integer capacidadeArmazenamento;
+    private Boolean possuiMarcasUso;
 }

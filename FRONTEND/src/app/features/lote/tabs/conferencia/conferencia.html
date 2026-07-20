@@ -18,8 +18,10 @@
         <tr>
           <th>IMEI</th>
           <th>Dispositivo</th>
+          <th>Capacidade</th>
           <th>Estética</th>
           <th>Status Item</th>
+          <th>Marcas de Uso</th>
           <th>Resetado</th>
           <th>Classificação</th>
           <th>Triador</th>
@@ -32,8 +34,16 @@
             <tr>
               <td class="mono">{{ item.numeroSerie }}</td>
               <td>{{ modeloDoItem(item.numeroSerie) }}</td>
+              <td>{{ labelCapacidade(item.capacidadeArmazenamento) }}</td>
               <td>{{ item.estetica }}</td>
               <td>{{ item.statusItem }}</td>
+              <td>
+                @if (item.statusItem === 'NOVO') {
+                  {{ item.possuiMarcasUso ? 'SIM' : 'NÃO' }}
+                } @else {
+                  —
+                }
+              </td>
               <td>{{ item.resetado }}</td>
               <td>{{ item.classificacao }}</td>
               <td>{{ item.triador }}</td>
@@ -74,6 +84,14 @@
           placeholder="357799158838892"
         />
 
+        <label>Capacidade de Armazenamento</label>
+        <select [ngModel]="form.capacidadeArmazenamento" (ngModelChange)="form.capacidadeArmazenamento = $event">
+          <option [value]="null">Selecione</option>
+          @for (op of opcoesCapacidade; track op.valor) {
+            <option [value]="op.valor">{{ op.label }}</option>
+          }
+        </select>
+
         <label>Status do Item</label>
         <select [ngModel]="form.statusItem" (ngModelChange)="form.statusItem = $event">
           <option value="">Selecione</option>
@@ -82,7 +100,26 @@
           }
         </select>
 
-        @if (form.statusItem !== 'NOVO') {
+        @if (form.statusItem === 'NOVO') {
+          <label>Possui marcas de uso?</label>
+          <select [ngModel]="form.possuiMarcasUso" (ngModelChange)="form.possuiMarcasUso = $event">
+            <option [ngValue]="null">Selecione</option>
+            <option [ngValue]="false">NÃO</option>
+            <option [ngValue]="true">SIM</option>
+          </select>
+
+          @if (form.possuiMarcasUso === true) {
+            <label>Estética</label>
+            <select [ngModel]="form.estetica" (ngModelChange)="form.estetica = $event">
+              <option value="">Selecione</option>
+              @for (op of opcoesEstetica; track op) {
+                <option [value]="op">{{ op }}</option>
+              }
+            </select>
+          }
+        }
+
+        @if (form.statusItem !== 'NOVO' && form.statusItem !== '') {
           <label>Estética</label>
           <select [ngModel]="form.estetica" (ngModelChange)="form.estetica = $event">
             <option value="">Selecione</option>

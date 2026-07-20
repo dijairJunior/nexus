@@ -1,7 +1,11 @@
 import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LoteRecebido, LoteRecebidoRequest, DefeitoConstatado } from '../../../../shared/models/lote-recebido';
+import {
+  LoteRecebido,
+  LoteRecebidoRequest,
+  DefeitoConstatado,
+} from '../../../../shared/models/lote-recebido';
 import { LoteRecebidoService } from '../../../../shared/service/lote-recebido';
 import { DefeitoConstatadoService } from '../../../../shared/service/defeito-constatado';
 import { LoteDetalhe } from '../../pages/lote-detalhe/lote-detalhe';
@@ -38,6 +42,13 @@ export class Conferencia {
   readonly opcoesEstetica = ['BOM', 'RISCOS LEVES', 'RISCOS PROFUNDOS'];
   readonly opcoesResetado = ['SIM', 'NÃO'];
   readonly opcoesStatusItem = ['NOVO', 'OBSOLETO', 'TRIADO'];
+  readonly opcoesCapacidade = [
+    { valor: 64, label: '64 GB' },
+    { valor: 128, label: '128 GB' },
+    { valor: 256, label: '256 GB' },
+    { valor: 512, label: '512 GB' },
+    { valor: 1024, label: '1 TB' },
+  ];
 
   form: LoteRecebidoRequest = this.formVazio();
 
@@ -64,6 +75,8 @@ export class Conferencia {
       defeitoConstatadoId: null,
       statusItem: '',
       resetado: '',
+      capacidadeArmazenamento: null,
+      possuiMarcasUso: null,
       loteTriagemId: this.loteId ?? 0,
       triador: '',
       observacao: '',
@@ -187,6 +200,11 @@ export class Conferencia {
 
   modeloDoItem(numeroSerie: string): string {
     return this.modelosPorSerie().get(numeroSerie) ?? '...';
+  }
+
+  labelCapacidade(valor: number | null | undefined): string {
+    const opcao = this.opcoesCapacidade.find((o) => o.valor === valor);
+    return opcao ? opcao.label : '—';
   }
   // [CONFERENCIA] fim
 }

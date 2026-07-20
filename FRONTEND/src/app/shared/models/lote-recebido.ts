@@ -6,6 +6,8 @@ export interface LoteRecebido {
   classificacao: string;
   statusItem: string;
   resetado: string;
+  capacidadeArmazenamento: number;
+  possuiMarcasUso: boolean;
   loteTriagemId: number;
   triador: string;
   dataConferencia: string;
@@ -19,6 +21,8 @@ export interface LoteRecebidoRequest {
   defeitoConstatadoId: number | null;
   statusItem: string;
   resetado: string;
+  capacidadeArmazenamento: number | null;
+  possuiMarcasUso: boolean | null;
   loteTriagemId: number;
   triador: string;
   statusConferencia?: string;

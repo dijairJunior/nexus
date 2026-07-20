@@ -27,6 +27,23 @@ public class ProdutoService {
 
     // ── Métodos públicos (usados pelo Controller, falam em DTO) ──────────
 
+    private void validarCapacidadeArmazenamento(Produto produto) {
+        Integer capacidade = produto.getCapacidadeArmazenamento();
+
+        if (capacidade == null) {
+            throw new BusinessException("Capacidade de armazenamento é obrigatória.");
+        }
+
+        List<Integer> valoresValidos = List.of(64, 128, 256, 512, 1024);
+        if (!valoresValidos.contains(capacidade)) {
+            throw new BusinessException("Capacidade de armazenamento inválida. Valores aceitos: 64, 128, 256, 512, 1024.");
+        }
+
+        if ("NOVO".equalsIgnoreCase(produto.getStatusItem()) && produto.getPossuiMarcasUso() == null) {
+            throw new BusinessException("É obrigatório informar se o item possui marcas de uso.");
+        }
+    }
+
     public List<ProdutoResponseDTO> listarTodos() {
         return produtoRepository.findAll()
                 .stream()
@@ -66,6 +83,10 @@ public class ProdutoService {
     }
 
     private Produto salvar(Produto produto) {
+        validarCapacidadeArmazenamento(produto);
+        String classificacao = calcularClassificacao(produto);
+        produto.setClassificacao(classificacao);
+
         if (produto.getId() == null) {
 
             if (produto.getNumeroSerie() == null || produto.getNumeroSerie().isBlank()) {
@@ -92,10 +113,14 @@ public class ProdutoService {
 
     public String calcularClassificacao(Produto produto) {
 
-        String statusItem = produto.getStatusItem();
+        if ("NOVO".equalsIgnoreCase(produto.getStatusItem())) {
+            boolean possuiMarcas = Boolean.TRUE.equals(produto.getPossuiMarcasUso());
 
-        if("NOVO".equalsIgnoreCase(statusItem)) {
-            return "A";
+            if (!possuiMarcas) {
+                return "A";
+            }
+
+            return avaliarPorEstetica(produto.getEstetica());
         }
 
         //OBSOLETO, TRIADO ou não informado → avalia defeito e estetica
@@ -112,19 +137,19 @@ public class ProdutoService {
             return "D";
         }
 
-        String estetica = produto.getEstetica();
+        return avaliarPorEstetica(produto.getEstetica());
+    }
 
+    private String avaliarPorEstetica(String estetica) {
         if ("BOM".equalsIgnoreCase(estetica)) {
             return "A";
-        }
-        if ("RISCOS LEVES".equalsIgnoreCase(estetica)) {
+        } else if ("RISCOS LEVES".equalsIgnoreCase(estetica)) {
             return "B";
-        }
-        if ("RISCOS PROFUNDOS".equalsIgnoreCase(estetica)) {
+        } else if ("RISCOS PROFUNDOS".equalsIgnoreCase(estetica)) {
             return "C";
+        } else {
+            return "D";
         }
-
-        return "D";
     }
 
     private boolean isResetadoNao(String resetado) {
