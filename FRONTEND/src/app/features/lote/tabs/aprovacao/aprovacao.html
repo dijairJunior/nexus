@@ -1,1 +1,68 @@
-<p>aprovacao works!</p>
+<div class="aprovacao-container">
+
+  <div class="card form-decisao">
+    <h3>Registrar Decisão</h3>
+
+    @if (erroForm()) {
+      <div class="alerta-erro">{{ erroForm() }}</div>
+    }
+
+    <div class="form-row">
+      <label>Gestor</label>
+      <input type="text" [ngModel]="gestor()" (ngModelChange)="gestor.set($event)" placeholder="Nome do Gestor" />
+    </div>
+
+    <div class="form-rom">
+      <label>Decisão</label>
+      <select [ngModel]="statusAprovacao()" (ngModelChange)="statusAprovacao.set($event)">
+        <option [ngValue]="'APROVADO'">Aprovar</option>
+        <option [ngValue]="'REPROVADO'">Reprovado</option>
+      </select>
+    </div>
+
+    @if (statusAprovacao() === 'REPROVADO') {
+      <div class="form-rom">
+        <label>Motivo</label>
+        <textarea [ngModel]="motivo()" (ngModelChange)="motivo.set($event)" rows="3" placeholder="Motivo da reprovação"></textarea>
+      </div>
+    }
+
+    <button (click)="registrar()" [disabled]="enviando()" class="btn-registrar">
+      {{ enviando() ? 'Registrando...' : 'Registrar Decisão' }}
+    </button>
+
+    <div class="card historico">
+      <h3>Histórico de Decisão</h3>
+
+      @if (loading()) {
+        <p>Carregando Histórico</p>
+      } @else if (erro()) {
+        <p class="alerta-erro">{{ erro() }}</p>
+      } @else if (historico().length === 0) {
+        <p class="vazio">Nenhuma decisão registrada ainda.</p>
+      } @else {
+        <table class="tabela-historico">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Gestor</th>
+              <th>Status</th>
+              <th>Motivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of historico(); track item.id) {
+              <tr>
+                <td>{{ item.dataAprovacao | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ item.gestor }}</td>
+                <td><span class="badge" [class]="badgeClass(item.statusAprovacao)">{{ item.statusAprovacao }}</span> </td>
+                <td>{{ item.motivo || '-' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+
+</div>
