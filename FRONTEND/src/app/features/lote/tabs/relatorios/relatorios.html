@@ -1,1 +1,42 @@
-<p>relatorios works!</p>
+<div class="relatorio-container">
+  @if (erro()) {
+    <div class="alerta-erro">{{ erro() }}</div>
+  }
+
+  <div class="card relatorio-completo">
+    <h3>Relatório Completo</h3>
+    <p>Gerar o Excel com todas as seções: Produto, Lote Recebido, Contraprova, Aprovação.</p>
+    <button (click)="baixarCompleto()" [disabled]="baixandoCompleto()" class="btn-baixar">
+      {{ baixandoCompleto() ? 'Gerando...' : 'Baixar Relatório Completo' }}
+    </button>
+  </div>
+
+  <div class="card relatorio-parcial">
+    <h3>Relatório Parcial</h3>
+    <p>Selecione as seções que deseja incluir ao Excel.</p>
+
+    <div class="opcaoes-secoes">
+      <label>
+        <input type="checkbox" [ngModel]="incluirProduto()" (ngModelChange)="incluirProduto.set($event)"/>
+        Produtos
+      </label>
+      <label>
+        <input type="checkbox" [ngModel]="incluirLoteRecebido()" (ngModelChange)="incluirLoteRecebido.set($event)"/>
+        Lote Recebido
+      </label>
+      <label>
+        <input type="checkbox" [ngModel]="incluirContraprova()" (ngModelChange)="incluirContraprova.set($event)"/>
+        Contraprova
+      </label>
+      <label>
+        <input type="checkbox" [ngModel]="incluirAprovacao()" (ngModelChange)="incluirAprovacao.set($event)"/>
+        Aprovação
+      </label>
+    </div>
+
+    <button (click)="baixarParcial()" [disabled]="baixandoParcial() || nenhumaSecaoSelecionada()" class="btn-baixar">
+      {{ baixandoParcial() ? 'Gerando...' : 'Baixar Relatório Parcial' }}
+    </button>
+  </div>
+
+</div>
