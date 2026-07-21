@@ -9,6 +9,7 @@ import {
 } from '@angular/router';
 import { LoteService } from '../../services/lote';
 import { Lote } from '../../../../shared/models/lote';
+import { LoteContextService } from '../../services/lote-context';
 
 @Component({
   selector: 'app-lote-detalhe',
@@ -16,11 +17,13 @@ import { Lote } from '../../../../shared/models/lote';
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './lote-detalhe.html',
   styleUrl: './lote-detalhe.scss',
+  providers: [LoteContextService],
 })
 export class LoteDetalhe implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private loteService = inject(LoteService);
+  private loteContext = inject(LoteContextService);
 
   // Estado compartilhado — buscado uma única vez, consumido por todas as abas
   lote = signal<Lote | null>(null);
@@ -54,6 +57,7 @@ export class LoteDetalhe implements OnInit {
     this.loteService.buscarPorId(id).subscribe({
       next: (lote) => {
         this.lote.set(lote);
+        this.loteContext.setLote(lote);
         this.loading.set(false);
       },
       error: () => {
@@ -64,6 +68,6 @@ export class LoteDetalhe implements OnInit {
   }
 
   voltar(): void {
-    this.router.navigate(['/lotes']);
+    void this.router.navigate(['/lotes']);
   }
 }

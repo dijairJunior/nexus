@@ -1,1 +1,33 @@
-<p>contraprova works!</p>
+@if (loading()) {
+  <p>Carregando contraprova</p>
+} @else if (erro()) {
+  <p class="erro">{{ erro() }}</p>
+} @else if (resumo(); as r) {
+  <div class="resumo-cards">
+    <div class="card">Eperando: {{ r.totalEsperados }}</div>
+    <div class="card">Recebido: {{ r.totalRecebidos }}</div>
+    <div class="card">OK: {{ r.totalOk }}</div>
+    <div class="card">Divergência: {{ r.totalDivergenciaClassificacao }}</div>
+    <div class="card">Recebido não previsto: {{ r.totalRecebidoNaoPrevisto }}</div>
+    <div class="card">Previsto não recebido: {{ r.totalPrevistoNaoRecebido }}</div>
+  </div>
+
+  <table class="tabela-contraprova">
+    <thead>
+    <tr>
+      <th>Número de Série</th>
+      <th>Status</th>
+      <th>Classificação Recebida</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (item of r.itens; track item.numeroSerie) {
+        <tr>
+          <td>{{ item.numeroSerie }}</td>
+          <td><span class="badge" [ngClass]="badgeClass(item.status)">{{ statusLabel(item.status) }}</span></td>
+          <td>{{ item.classificacaoRecebida ?? '-' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

@@ -5,7 +5,7 @@
      <span class="spinner"> Carregando produtos...</span>
     </div>
   } @else if (erro()){
-    <div class="state-box erro">{{ erro }}</div>
+    <div class="state-box erro">{{ erro() }}</div>
   } @else if (produtos().length === 0) {
     <div class="state-box vazio">Nunhum produto encontrado nesse lote.</div>
   } @else {
