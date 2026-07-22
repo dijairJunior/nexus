@@ -4,6 +4,8 @@ import br.com.waps.nexus.domain.importacao.dto.ConfirmarArmRequest;
 import br.com.waps.nexus.domain.importacao.dto.ItemConfirmadoDTO;
 import br.com.waps.nexus.domain.importacao.dto.ItemPreviewDTO;
 import br.com.waps.nexus.domain.importacao.dto.PreviewArmResponse;
+import br.com.waps.nexus.domain.lote.historico.LoteHistoricoService;
+import br.com.waps.nexus.domain.lote.historico.TipoEventoHistorico;
 import br.com.waps.nexus.domain.lote.triagem.LoteTriagem;
 import br.com.waps.nexus.domain.lote.triagem.LoteTriagemRepository;
 import br.com.waps.nexus.domain.lote.triagem.StatusLote;
@@ -27,11 +29,14 @@ public class ImportacaoService {
 
     private final ProdutoRepository produtoRepository;
     private final LoteTriagemRepository loteTriagemRepository;
+    private final LoteHistoricoService loteHistoricoService;
 
     public ImportacaoService(LoteTriagemRepository loteTriagemRepository,
-                             ProdutoRepository produtoRepository) {
+                             ProdutoRepository produtoRepository,
+                             LoteHistoricoService loteHistoricoService) {
         this.loteTriagemRepository = loteTriagemRepository;
         this.produtoRepository = produtoRepository;
+        this.loteHistoricoService = loteHistoricoService;
     }
 
     public PreviewArmResponse gerarPreview(MultipartFile arquivo, String protocolo) throws IOException {
@@ -168,6 +173,12 @@ public class ImportacaoService {
         lote.setStatus(StatusLote.RECEBIDO);
 
         LoteTriagem loteSalvo = loteTriagemRepository.save(lote);
+
+        loteHistoricoService.registrar(
+                loteSalvo.getId(),
+                TipoEventoHistorico.LOTE_CRIADO,
+                "Lote criado via importação ARM - protocolo " + loteSalvo.getProtocolo()
+        );
 
         List<Produto> produtos = new ArrayList<>();
         for (ItemConfirmadoDTO item : request.getItens()) {

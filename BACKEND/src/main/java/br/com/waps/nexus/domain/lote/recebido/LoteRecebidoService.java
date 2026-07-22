@@ -1,5 +1,7 @@
 package br.com.waps.nexus.domain.lote.recebido;
 
+import br.com.waps.nexus.domain.lote.historico.LoteHistoricoService;
+import br.com.waps.nexus.domain.lote.historico.TipoEventoHistorico;
 import br.com.waps.nexus.domain.lote.triagem.LoteTriagemRepository;
 import br.com.waps.nexus.domain.produto.Produto;
 import br.com.waps.nexus.domain.produto.ProdutoService;
@@ -20,14 +22,17 @@ public class LoteRecebidoService {
     private final LoteRecebidoRepository loteRecebidoRepository;
     private final LoteTriagemRepository loteTriagemRepository;
     private final ProdutoService produtoService;
+    private final LoteHistoricoService loteHistoricoService;
 
     public LoteRecebidoService (LoteRecebidoRepository LoteRecebidoRepository,
                                 LoteTriagemRepository LoteTriagemRepository,
-                                ProdutoService ProdutoService) {
+                                ProdutoService ProdutoService,
+                                LoteHistoricoService LoteHistoricoService) {
 
         this.loteRecebidoRepository = LoteRecebidoRepository;
         this.loteTriagemRepository = LoteTriagemRepository;
         this.produtoService = ProdutoService;
+        this.loteHistoricoService = LoteHistoricoService;
     }
 
     // ── Métodos públicos (usados pelo Controller, falam em DTO) ──────────
@@ -64,6 +69,14 @@ public class LoteRecebidoService {
         if (loteRecebido.getStatusConferencia() == null || loteRecebido.getStatusConferencia().isBlank()) {
             loteRecebido.setStatusConferencia("PENDENTE");
         }
+
+        LoteRecebido salvo = loteRecebidoRepository.save(loteRecebido);
+
+        loteHistoricoService.registrar(
+                salvo.getLoteTriagemId(),
+                TipoEventoHistorico.CONFERENCIA_REGISTRADA,
+                "Conferência registrada para IMEI " + salvo.getNumeroSerie()
+        );
 
         return loteRecebidoRepository.save(loteRecebido);
     }
