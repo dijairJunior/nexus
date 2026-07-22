@@ -1,1 +1,35 @@
-<p>historico works!</p>
+<div class="historico-container">
+  @if (carregando()) {
+    <p class="mensagem-status">Carregando Histórico</p>
+  }
+
+  @if (erro()) {
+    <p class="mensagem-status">{{ erro() }}</p>
+  }
+
+  @if (!carregando() && !erro() && eventos().length === 0) {
+    <p class="mensagem-status">Nenhum evento registrado para este lote ainda.</p>
+  }
+
+  @if (!carregando() && eventos().length > 0 ) {
+    <ul class="timeline">
+      @for (evento of eventos(); track evento.id) {
+        <li class="timeline-item">
+          <div class="timeline-icone">
+            <i [class]="iconePorTipo(evento.tipoEvento)"></i>
+          </div>
+          <div class="timeline-conteudo">
+            <div class="timeline-cabecalho">
+              <span class="timeline-tipo">{{ rotuloPorTipo(evento.tipoEvento) }}</span>
+              <span class="timeline-data">{{ evento.dataEvento | date: 'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <p class="timeline-descricao">{{ evento.descricao }}</p>
+            @if (evento.usuario) {
+              <span class="timeline-usuario">por {{ evento.usuario }}</span>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>
